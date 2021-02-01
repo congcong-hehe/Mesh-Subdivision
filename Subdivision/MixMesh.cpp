@@ -156,6 +156,7 @@ int MixMesh::loadFile(std::string file_name)
 	REAL z_min = FLT_MAX, z_max = -FLT_MAX;
 
 	std::string line;
+	int n = 0;	// 点的数量
 	while (std::getline(in, line))
 	{
 		std::string tag;
@@ -176,6 +177,7 @@ int MixMesh::loadFile(std::string file_name)
 			z_max = fmax(z_max, vec3f.z);
 
 			vtxs_.push_back(vec3f);
+			n++;
 		}
 		else if (tag == "f")
 		{
@@ -184,6 +186,16 @@ int MixMesh::loadFile(std::string file_name)
 			if (is >> v3)
 			{
 				Quad quad;
+
+				// 处理序号为负数的情况
+				if (v0 < 0)
+				{
+					v0 += n + 1;
+					v1 += n + 1;
+					v2 += n + 1;
+					v3 += n + 1;
+				}
+
 				quad.v[0] = v0 - 1;
 				quad.v[1] = v1 - 1;
 				quad.v[2] = v2 - 1;
@@ -193,6 +205,15 @@ int MixMesh::loadFile(std::string file_name)
 			else
 			{
 				Tri tri;
+
+				// 处理序号为负数的情况
+				if (v0 < 0)
+				{
+					v0 += n + 1;
+					v1 += n + 1;
+					v2 += n + 1;
+				}
+
 				tri.v[0] = v0 - 1;
 				tri.v[1] = v1 - 1;
 				tri.v[2] = v2 - 1;
